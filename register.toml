@@ -1,0 +1,222 @@
+[[service]]
+name = "headscale"
+purpose = "Self-hosted Tailscale control server that connects the private network."
+unit = "headscale"
+category = "network"
+owner = "drake"
+port = 443
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "pihole-FTL"
+purpose = "Pi-hole DNS server that blocks ads and unwanted domains for the network."
+unit = "pihole-FTL"
+category = "network"
+owner = "drake"
+port = 53
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "vault"
+purpose = "HashiCorp Vault, the store for passwords and keys."
+unit = "vault"
+category = "secrets"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "vault-unseal"
+purpose = "Unlocks Vault automatically after it starts."
+unit = "vault-unseal"
+category = "secrets"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "archer-discord-bot"
+purpose = "TODO confirm with Drake"
+unit = "archer-discord-bot"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "ava-discord-bot"
+purpose = "TODO confirm with Drake"
+unit = "ava-discord-bot"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "ryan-discord-bot"
+purpose = "TODO confirm with Drake"
+unit = "ryan-discord-bot"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "soren-discord-bot"
+purpose = "TODO confirm with Drake"
+unit = "soren-discord-bot"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "god-verify-bot"
+purpose = "TODO confirm with Drake"
+unit = "god-verify-bot"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "guild-of-defiance-bot"
+purpose = "TODO confirm with Drake"
+unit = "guild-of-defiance-bot"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-librarian-discord"
+purpose = "TODO confirm with Drake"
+unit = "atlas-librarian-discord"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-publication-discord"
+purpose = "TODO confirm with Drake"
+unit = "atlas-publication-discord"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-chat-router"
+purpose = "TODO confirm with Drake"
+unit = "atlas-chat-router"
+category = "bot"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-dsh-tunnel"
+purpose = "TODO confirm with Drake"
+unit = "atlas-dsh-tunnel"
+category = "tunnel"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-vault-tunnel"
+purpose = "TODO confirm with Drake"
+unit = "atlas-vault-tunnel"
+category = "tunnel"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-runpod-27b-tunnel"
+purpose = "TODO confirm with Drake"
+unit = "atlas-runpod-27b-tunnel"
+category = "tunnel"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-kvm8-pi-reverse-tunnel"
+purpose = "TODO confirm with Drake"
+unit = "atlas-kvm8-pi-reverse-tunnel"
+category = "tunnel"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "archer-model-tunnel"
+purpose = "TODO confirm with Drake"
+unit = "archer-model-tunnel"
+category = "tunnel"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "fail2ban"
+purpose = "Bans addresses that repeatedly fail to log in."
+unit = "fail2ban"
+category = "security"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "psad"
+purpose = "Port scan attack detector; watches firewall logs for scans."
+unit = "psad"
+category = "security"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "atlas-forgejo"
+purpose = "Forgejo code hosting, runs in Docker."
+unit = "atlas-forgejo"
+category = "storage"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
+[[service]]
+name = "cloudflare-ddns-updater"
+purpose = "Keeps the Cloudflare DNS record pointed at this machine's current address."
+unit = "cloudflare-ddns-updater"
+category = "network"
+owner = "drake"
+files = []
+secrets = "TODO confirm with Drake"
+boot = false
+
