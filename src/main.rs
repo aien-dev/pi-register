@@ -81,6 +81,7 @@ const IGNORE: &[&str] = &[
     "switcheroo-control.service", "rtkit-daemon.service", "pi-register*",
     "apport.service", "chrony.service", "dmesg.service", "netplan-*", "open-vm-tools.service",
     "piboot-*", "rpi-eeprom-update.service", "sshd-keygen.service", "vgauth.service",
+    "containerd.service", "ubuntu-fan.service", "postfix.service",
 ];
 
 fn pattern_matches(pat: &str, unit: &str) -> bool {
@@ -370,6 +371,7 @@ boot = false
         assert!(is_ignored("ssh.service"));
         assert!(is_ignored("chrony.service"));
         assert!(is_ignored("piboot-try-reboot.service"));
+        assert!(is_ignored("containerd.service") && is_ignored("postfix.service") && is_ignored("ubuntu-fan.service"));
         assert!(!is_ignored("headscale.service"));
         assert!(!is_ignored("fail2ban.service"));
     }
