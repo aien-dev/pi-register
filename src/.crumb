@@ -1,0 +1,31 @@
+{
+  "above": {
+    "name": "pi-register",
+    "path": ".."
+  },
+  "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T15:56:32Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:6c3edd45335d6e8685867a47323f0d2ff58043782237b9e830d7732d7f3e36d7",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 1,
+      "generated_at_commit": "f63706160eb878a0de426de11a64803c98a868ee",
+      "source_tree": "sha256:aa3c688b3c5de7a6e87fdec95880b1ec826bb1a0614d2562605f7ee820658827"
+    },
+    "owner_lane": "",
+    "seed": {
+      "files": [
+        "main.rs"
+      ],
+      "purpose_auto": "Directory src. Purpose not yet described by a human."
+    }
+  },
+  "layer": "src",
+  "name": "src",
+  "purpose": "Directory src. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
+}

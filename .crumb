@@ -1,0 +1,49 @@
+{
+  "below": [
+    {
+      "name": "src",
+      "role": ""
+    }
+  ],
+  "extensions": {
+    "generated": {
+      "children": [
+        {
+          "digest": "6c3edd45335d6e8685867a47323f0d2ff58043782237b9e830d7732d7f3e36d7",
+          "last_commit": "e4efbd6",
+          "name": "src",
+          "purpose": "Directory src. Purpose not yet described by a human."
+        }
+      ],
+      "children_root": "sha256:346c4f7cd4ea2f6e0acd661cc5d1e687ec1f7c00e7979bc4b8e97938250291d0",
+      "compiled_at": "2026-10-04T15:56:32Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:20d0a17bf70bb21b316477e983a83046689daa3604feba06850925b215efce41",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 7,
+      "generated_at_commit": "f63706160eb878a0de426de11a64803c98a868ee",
+      "source_tree": "sha256:9a24cfbb85544a021d2d02e993476357401a7d31740720d73e1f024d6415448d"
+    },
+    "owner_lane": "",
+    "seed": {
+      "files": [
+        "Cargo.lock",
+        "Cargo.toml",
+        "LICENSE",
+        "README.md",
+        "register.toml"
+      ],
+      "git": {
+        "branch": "main",
+        "head": "f637061",
+        "remote": ""
+      },
+      "purpose_auto": "Repository root pi-register. Purpose not yet described by a human."
+    }
+  },
+  "layer": "root",
+  "name": "pi-register",
+  "purpose": "Register of the services on a Linux server (what the machine runs and why); Rust CLI pi-register + register.toml for the Pi hub",
+  "schema_version": "1.0.0"
+}
