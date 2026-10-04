@@ -13,4 +13,4 @@ Services are listed in `register.toml` (see the example in this folder). Fields:
 
 Register location: `--register <path>`, else `/etc/pi-register/register.toml`, else `./register.toml`.
 
-Build: `cargo build --release`. No network calls. License: Apache-2.0.
+Build: `cargo build --release`. No network calls. License: AGPL-3.0-or-later (see LICENSE).
