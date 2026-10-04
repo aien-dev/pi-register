@@ -1,222 +1,360 @@
 [[service]]
 name = "headscale"
-purpose = "Self-hosted Tailscale control server that connects the private network."
+purpose = "Self-hosted Tailscale control server that lets Drake's machines join one private network."
 unit = "headscale"
 category = "network"
 owner = "drake"
 port = 443
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
+files = ["/etc/headscale/config.yaml", "/var/lib/headscale/"]
+secrets = "/var/lib/headscale/noise_private.key"
+health = "curl -fs http://127.0.0.1:9090/metrics -o /dev/null"
+boot = true
+notes = "Health uses the local metrics port because https://127.0.0.1/health fails TLS (certificate is for hs.aienos.com)."
 
 [[service]]
-name = "pihole-FTL"
-purpose = "Pi-hole DNS server that blocks ads and unwanted domains for the network."
+name = "headscale-backup"
+purpose = "Nightly timer that backs up the Headscale database and pushes it off the machine."
+unit = "headscale-backup.timer"
+category = "storage"
+owner = "drake"
+depends_on = ["headscale"]
+files = ["/usr/local/bin/headscale-backup.sh"]
+boot = true
+
+[[service]]
+name = "gandi-ddns"
+purpose = "Timer that keeps the hs.aienos.com DNS record pointing at this machine's current address."
+unit = "gandi-ddns.timer"
+category = "network"
+owner = "drake"
+files = ["/usr/local/bin/gandi-ddns.sh"]
+secrets = "/etc/gandi-pat"
+boot = true
+
+[[service]]
+name = "fail2ban"
+purpose = "Bans addresses that repeatedly fail to log in (SSH jail)."
+unit = "fail2ban"
+category = "security"
+owner = "drake"
+files = ["/etc/fail2ban/jail.local"]
+health = "sudo fail2ban-client status >/dev/null"
+boot = true
+notes = "Config restored from the old Pi backup; only the sshd jail is active."
+
+[[service]]
+name = "psad"
+purpose = "Watches firewall logs for port scans and flags the scanner."
+unit = "psad"
+category = "security"
+owner = "drake"
+files = ["/etc/psad/psad.conf"]
+boot = true
+notes = "Config restored from backup. Needs firewall logging rules to see anything; none were added."
+
+[[service]]
+name = "pihole"
+purpose = "Pi-hole: the home network DNS server that blocks ad and tracker domains."
 unit = "pihole-FTL"
 category = "network"
 owner = "drake"
 port = 53
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
+files = ["/etc/pihole/pihole.toml","/etc/pihole/gravity.db"]
+secrets = "/etc/pihole/pihole.toml"
+health = "dig +short +time=2 @127.0.0.1 example.com | grep -q ."
+boot = true
+notes = "Fresh install of v6, then pihole.toml, block lists and adlists restored. Old query history (790 MB) NOT copied. The router is NOT pointed at this Pi; DHCP is off. Ubuntu stub resolver stays on 127.0.0.53."
 
 [[service]]
 name = "vault"
-purpose = "HashiCorp Vault, the store for passwords and keys."
+purpose = "HashiCorp Vault: the locked store for Drake's secrets."
 unit = "vault"
 category = "secrets"
 owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
+port = 8200
+files = ["/etc/vault.d/vault.hcl","/opt/vault","/usr/bin/vault"]
+secrets = "/opt/vault/data"
+health = "ss -ltn | grep -q 127.0.0.1:8200"
+boot = true
+notes = "Copied as opaque files and started SEALED. Nobody unsealed or read it (Drake privacy rule)."
 
 [[service]]
 name = "vault-unseal"
-purpose = "Unlocks Vault automatically after it starts."
+purpose = "Helper that unseals Vault automatically after it starts."
 unit = "vault-unseal"
 category = "secrets"
 owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
+depends_on = ["vault"]
+files = ["/usr/local/sbin/vault-local-unseal"]
+secrets = "/usr/local/sbin/vault-local-unseal"
 boot = false
+notes = "Installed but NOT enabled or started on purpose: starting it would unlock the vault. Drake must decide."
 
 [[service]]
-name = "archer-discord-bot"
-purpose = "TODO confirm with Drake"
-unit = "archer-discord-bot"
-category = "bot"
+name = "docker"
+purpose = "Container engine that runs Forgejo."
+unit = "docker"
+category = "infra"
 owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "ava-discord-bot"
-purpose = "TODO confirm with Drake"
-unit = "ava-discord-bot"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "ryan-discord-bot"
-purpose = "TODO confirm with Drake"
-unit = "ryan-discord-bot"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "soren-discord-bot"
-purpose = "TODO confirm with Drake"
-unit = "soren-discord-bot"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "god-verify-bot"
-purpose = "TODO confirm with Drake"
-unit = "god-verify-bot"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "guild-of-defiance-bot"
-purpose = "TODO confirm with Drake"
-unit = "guild-of-defiance-bot"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "atlas-librarian-discord"
-purpose = "TODO confirm with Drake"
-unit = "atlas-librarian-discord"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "atlas-publication-discord"
-purpose = "TODO confirm with Drake"
-unit = "atlas-publication-discord"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "atlas-chat-router"
-purpose = "TODO confirm with Drake"
-unit = "atlas-chat-router"
-category = "bot"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "atlas-dsh-tunnel"
-purpose = "TODO confirm with Drake"
-unit = "atlas-dsh-tunnel"
-category = "tunnel"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "atlas-vault-tunnel"
-purpose = "TODO confirm with Drake"
-unit = "atlas-vault-tunnel"
-category = "tunnel"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "atlas-runpod-27b-tunnel"
-purpose = "TODO confirm with Drake"
-unit = "atlas-runpod-27b-tunnel"
-category = "tunnel"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "atlas-kvm8-pi-reverse-tunnel"
-purpose = "TODO confirm with Drake"
-unit = "atlas-kvm8-pi-reverse-tunnel"
-category = "tunnel"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "archer-model-tunnel"
-purpose = "TODO confirm with Drake"
-unit = "archer-model-tunnel"
-category = "tunnel"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "fail2ban"
-purpose = "Bans addresses that repeatedly fail to log in."
-unit = "fail2ban"
-category = "security"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
-
-[[service]]
-name = "psad"
-purpose = "Port scan attack detector; watches firewall logs for scans."
-unit = "psad"
-category = "security"
-owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
-boot = false
+files = ["/opt/atlas-forgejo/docker-compose.yml"]
+health = "sudo docker info >/dev/null 2>&1"
+boot = true
+notes = "Installed from Ubuntu (docker.io)."
 
 [[service]]
 name = "atlas-forgejo"
-purpose = "Forgejo code hosting, runs in Docker."
-unit = "atlas-forgejo"
+purpose = "Atlas Forge: Drake's private Git server (Forgejo) holding the Atlas repositories."
+unit = "docker"
+category = "git"
+owner = "drake"
+port = 3010
+depends_on = ["docker"]
+files = ["/opt/atlas-forgejo/docker-compose.yml","/srv/atlas/forgejo"]
+secrets = "/srv/atlas/forgejo/jwt/private.pem"
+health = "curl -fs http://127.0.0.1:3010/ -o /dev/null"
+boot = true
+notes = "Container, not a unit; restart policy keeps it up. Data restored from /srv/atlas/forgejo. The pinned image version was gone from the registry, so compose now uses code.forgejo.org/forgejo/forgejo:16-rootless (same major version; original compose saved as docker-compose.yml.orig-pinned). Data owner is uid 1000 (drake) because the container runs as 1000."
+
+[[service]]
+name = "atlas-forgejo-backup"
+purpose = "Nightly 03:17 job that makes an encrypted Forgejo recovery archive and uploads it."
+unit = "atlas-forgejo-backup.timer"
 category = "storage"
 owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
+depends_on = ["atlas-forgejo","docker"]
+files = ["/usr/local/libexec/atlas-forgejo-backup","/etc/atlas-recovery-vault/backup.env","/srv/atlas/backups/forgejo"]
+secrets = "/etc/atlas-recovery-vault/backup.env"
+boot = true
+notes = "Timer installed and active. Not yet run here, so the upload is UNVERIFIED."
+
+[[service]]
+name = "atlas-122b-guard"
+purpose = "Every 2 minutes checks that the paid 122B model server is not left running."
+unit = "atlas-122b-guard.timer"
+category = "ai"
+owner = "drake"
+depends_on = ["atlas-runpod-27b-tunnel"]
+files = ["/usr/local/libexec/atlas-control-plane/atlas-model-mode.py"]
+boot = true
+notes = "Timer active; last run finished OK. Its RunPod calls will fail until the RunPod key is replaced."
+
+[[service]]
+name = "archer-discord-bot"
+purpose = "Archer, a private Discord AI agent."
+unit = "archer-discord-bot"
+category = "bot"
+owner = "drake"
+depends_on = ["atlas-chat-router"]
+files = ["/home/monkey/apps/archer-discord","/etc/atlas-agent/archer.env","/usr/local/libexec/atlas-private-notebooks"]
+secrets = "/etc/atlas-agent/archer.env"
+boot = true
+notes = "Restored from the old Pi backup 2026-10-03. Runs as user monkey (uid 2000 here, was 1000 on the old Pi because drake owns 1000). Logged in to Discord cleanly on restore. Its model backend (RunPod tunnel) is down, so replies are degraded."
+
+[[service]]
+name = "ava-discord-bot"
+purpose = "Ava, a Discord AI agent in the Atlas server."
+unit = "ava-discord-bot"
+category = "bot"
+owner = "drake"
+depends_on = ["atlas-chat-router"]
+files = ["/home/monkey/apps/ava-discord","/etc/atlas-agent/ava.env","/usr/local/libexec/atlas-private-notebooks"]
+secrets = "/etc/atlas-agent/ava.env"
+boot = true
+notes = "Restored from the old Pi backup 2026-10-03. Runs as user monkey (uid 2000 here, was 1000 on the old Pi because drake owns 1000). Logged in to Discord cleanly on restore. Its model backend (RunPod tunnel) is down, so replies are degraded."
+
+[[service]]
+name = "ryan-discord-bot"
+purpose = "Ryan, a Discord AI agent in the Atlas server."
+unit = "ryan-discord-bot"
+category = "bot"
+owner = "drake"
+depends_on = ["atlas-chat-router"]
+files = ["/home/monkey/apps/ryan-discord","/etc/atlas-agent/ryan.env","/usr/local/libexec/atlas-private-notebooks"]
+secrets = "/etc/atlas-agent/ryan.env"
+boot = true
+notes = "Restored from the old Pi backup 2026-10-03. Runs as user monkey (uid 2000 here, was 1000 on the old Pi because drake owns 1000). Logged in to Discord cleanly on restore. Its model backend (RunPod tunnel) is down, so replies are degraded."
+
+[[service]]
+name = "soren-discord-bot"
+purpose = "Soren, a Discord AI agent in the Atlas server."
+unit = "soren-discord-bot"
+category = "bot"
+owner = "drake"
+depends_on = ["atlas-chat-router"]
+files = ["/home/monkey/apps/soren-discord","/etc/atlas-agent/soren.env","/usr/local/libexec/atlas-private-notebooks"]
+secrets = "/etc/atlas-agent/soren.env"
+boot = true
+notes = "Restored from the old Pi backup 2026-10-03. Runs as user monkey (uid 2000 here, was 1000 on the old Pi because drake owns 1000). Logged in to Discord cleanly on restore. Its model backend (RunPod tunnel) is down, so replies are degraded."
+
+[[service]]
+name = "atlas-librarian-discord"
+purpose = "The Librarian: Discord bot that keeps the Atlas research-library channel indexed."
+unit = "atlas-librarian-discord"
+category = "bot"
+owner = "drake"
+files = ["/home/monkey/apps/atlas-publication-discord","/var/lib/atlas-project-memory"]
+secrets = "/home/monkey/apps/atlas-publication-discord/librarian.env"
+boot = true
+notes = "Restored from the old Pi backup 2026-10-03. Runs as user monkey (uid 2000 here, was 1000 on the old Pi because drake owns 1000). Logged in and found 51 papers."
+
+[[service]]
+name = "god-verify-bot"
+purpose = "Guild of Defiance verification bot and the Atlas control-plane Discord suite."
+unit = "god-verify-bot"
+category = "bot"
+owner = "drake"
+depends_on = ["atlas-chat-router"]
+files = ["/home/monkey/apps/guild-of-defiance-discord","/usr/local/libexec/atlas-control-plane/discord-suite.mjs"]
+secrets = "/etc/atlas-agent/atlas.env"
 boot = false
+notes = "FAILED: Discord says the bot token is invalid (expired or reset). Disabled. Needs a new token from Drake."
+
+[[service]]
+name = "guild-of-defiance-bot"
+purpose = "Gideon, the Guild of Defiance Discord bot."
+unit = "guild-of-defiance-bot"
+category = "bot"
+owner = "drake"
+files = ["/home/monkey/apps/guild-of-defiance-discord"]
+secrets = "/home/monkey/apps/guild-of-defiance-discord/.env"
+boot = false
+notes = "FAILED: the code crashes on start (ledger/store.mjs lacks an export named withoutInternalBalanceTransfers). A code mismatch in the backup, not a setup problem. Disabled."
+
+[[service]]
+name = "atlas-publication-discord"
+purpose = "Atlas publication Discord bot."
+unit = "atlas-publication-discord"
+category = "bot"
+owner = "drake"
+depends_on = ["god-verify-bot"]
+files = ["/home/monkey/apps/atlas-publication-discord"]
+secrets = "/home/monkey/apps/guild-of-defiance-discord/.env"
+boot = false
+notes = "FAILED: the settings file it reads has no ATLAS_PROJECT_GUILD_ID. I did not add one because the only candidate file holds the Librarian's token. Disabled."
+
+[[service]]
+name = "atlas-chat-router"
+purpose = "Local chat router that sends bot messages to the right AI model backend."
+unit = "atlas-chat-router"
+category = "ai"
+owner = "drake"
+port = 8790
+files = ["/home/monkey/apps/atlas-stack/atlas-chat","/etc/atlas-control-plane"]
+secrets = "/etc/atlas-control-plane/router.env"
+health = "ss -ltn | grep -q 127.0.0.1:8790"
+boot = true
+notes = "Python server; starts cleanly but its model backends (RunPod tunnels) are not reachable."
+
+[[service]]
+name = "atlas-dsh-tunnel"
+purpose = "SSH tunnel from the Pi to the Boston server (local port 18308 to its port 3080)."
+unit = "atlas-dsh-tunnel.service"
+category = "tunnel"
+owner = "drake"
+port = 18308
+files = ["/home/monkey/.ssh/atlas-dsh-boston"]
+secrets = "/home/monkey/.ssh/atlas-dsh-boston"
+boot = true
+notes = "autossh; running."
+
+[[service]]
+name = "atlas-kvm8-pi-reverse-tunnel"
+purpose = "Reverse SSH route that lets the Boston server reach this Pi on its port 22022."
+unit = "atlas-kvm8-pi-reverse-tunnel"
+category = "tunnel"
+owner = "drake"
+port = 22022
+files = ["/var/lib/atlas-kvm8-tunnel/.ssh"]
+secrets = "/var/lib/atlas-kvm8-tunnel/.ssh/id_ed25519"
+boot = true
+notes = "Running. Boston must be told this is the new Pi (same key was restored); UNVERIFIED end to end."
+
+[[service]]
+name = "atlas-runpod-27b-tunnel"
+purpose = "SSH tunnel to the everyday 27B model pod on RunPod."
+unit = "atlas-runpod-27b-tunnel"
+category = "tunnel"
+owner = "drake"
+files = ["/usr/local/libexec/atlas-control-plane/runpod-tunnel.sh","/root/.runpod/config.toml","/usr/local/bin/runpodctl"]
+secrets = "/root/.runpod/config.toml"
+boot = false
+notes = "FAILED: RunPod answers 401 unauthorized (API key expired or revoked). Needs a new RunPod key in /root/.runpod/config.toml. Disabled."
+
+[[service]]
+name = "archer-model-tunnel"
+purpose = "SSH tunnel from Archer to its model pod on RunPod."
+unit = "archer-model-tunnel"
+category = "tunnel"
+owner = "drake"
+files = ["/usr/local/libexec/discord-fleet/archer-tunnel-wrapper.sh","/root/.runpod/config.toml"]
+secrets = "/root/.runpod/config.toml"
+boot = false
+notes = "FAILED: same RunPod 401 as the 27B tunnel. Disabled."
+
+[[service]]
+name = "atlas-vault-tunnel"
+purpose = "Reverse tunnel that exposes Vault (8200) to the Boston server."
+unit = "atlas-vault-tunnel"
+category = "tunnel"
+owner = "drake"
+depends_on = ["vault-unseal"]
+files = ["/home/monkey/.ssh/atlas-vault-boston"]
+secrets = "/home/monkey/.ssh/atlas-vault-boston"
+boot = false
+notes = "Installed, NOT started: it requires vault-unseal, which would unlock the vault."
+
+[[service]]
+name = "wg-atlas"
+purpose = "WireGuard link from the Pi to the Atlas Boston hub (10.88.0.2)."
+unit = "wg-quick@wg-atlas"
+category = "network"
+owner = "drake"
+files = ["/etc/wireguard/wg-atlas.conf"]
+secrets = "/etc/wireguard/pi-atlas.key"
+boot = true
+notes = "Interface is up but the hub has not answered (0 bytes received, no handshake). Hub may not know the new address or may be down; UNVERIFIED."
+
+[[service]]
+name = "tunnel-health"
+purpose = "Every minute checks the public DHG Toolbox API and restarts the Cloudflare tunnels if it fails."
+unit = "tunnel-health.timer"
+category = "network"
+owner = "drake"
+files = ["/usr/local/bin/tunnel-health.sh"]
+boot = false
+notes = "Disabled: the check fails here and cloudflared is not restored, so it could only fail every minute."
 
 [[service]]
 name = "cloudflare-ddns-updater"
-purpose = "Keeps the Cloudflare DNS record pointed at this machine's current address."
-unit = "cloudflare-ddns-updater"
+purpose = "Script that keeps a Cloudflare DNS record pointed at this connection's address."
+unit = "cron.service"
 category = "network"
 owner = "drake"
-files = []
-secrets = "TODO confirm with Drake"
+files = ["/home/monkey/cloudflare-ddns-updater"]
+secrets = "/home/monkey/cloudflare-ddns-updater/cloudflare.sh"
 boot = false
+notes = "Copied only. The backup had no unit or cron entry that ran it, and running it would change real DNS records, so it is not scheduled."
 
+[[service]]
+name = "cron-jobs"
+purpose = "Scheduled jobs: nightly guild ledger dashboard, a Cortex tunnel at boot, and a 5-minute network monitor."
+unit = "cron.service"
+category = "cron"
+owner = "drake"
+files = ["/home/monkey/bin/cortex-tunnel-boston","/usr/local/bin/network_monitor.sh"]
+boot = false
+notes = "monkey crontab restored. Root job network_monitor_simple.sh is restored commented out because that script is not in the backup. Ledger dashboard depends on the failing Gideon code. Cortex tunnel waits on wg-atlas."
+
+[[service]]
+name = "tailscale"
+purpose = "Joins this Pi to Drake's private Headscale network so it is reachable from his other devices, at home or away."
+unit = "tailscaled"
+category = "network"
+owner = "drake"
+depends_on = ["headscale"]
+port = 41641
+files = ["/var/lib/tailscale/", "/etc/default/tailscaled"]
+secrets = "/var/lib/tailscale/tailscaled.state"
+health = "tailscale status --json | grep -q '\"BackendState\": *\"Running\"'"
+boot = true
+notes = "Node hub, 100.64.0.3, name hub.hub.internal. Joined 2026-10-04 with a one-time pre-auth key. Started with --accept-dns=false so the Pi keeps its own DNS (router upstream; Pi-hole and gandi-ddns untouched)."
