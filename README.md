@@ -2,7 +2,11 @@
 
 A register of the services on a Linux server (Debian/Ubuntu with systemd), so one command tells you what the machine runs and why.
 
-Services are listed in `register.toml`. The one in this folder is the Pi hub's own register and doubles as the example. Fields: name, purpose, unit, category, owner, port, depends_on, files, secrets (a path only, never the secret), health (a shell command that exits 0 when healthy), boot, notes. Required: name, purpose, unit, category, owner, boot. The rest are optional. A `unit` without a suffix means `<unit>.service`; write `.timer`, `.socket` and so on in full. `depends_on` and `files` are recorded and shown, not enforced.
+Supports [Aienix](https://github.com/aien-dev/aienix), the core tree of AIEN. It is an operations tool for the project's Raspberry Pi house server, not part of the core.
+
+**Status (2026-10-18): working, quiet.** The code and the register were last changed on 2026-10-04; since then only the license and this README changed (last on 2026-10-13). The register lists 32 services as of that date (count the `[[service]]` entries in `register.toml`).
+
+Services are listed in `register.toml`. The one in this folder is the register of the project's Raspberry Pi house server and doubles as the example. Fields: name, purpose, unit, category, owner, port, depends_on, files, secrets (a path only, never the secret), health (a shell command that exits 0 when healthy), boot, notes. Required: name, purpose, unit, category, owner, boot. The rest are optional. A `unit` without a suffix means `<unit>.service`; write `.timer`, `.socket` and so on in full. `depends_on` and `files` are recorded and shown, not enforced.
 
 ## Commands
 - `pi-register status`: table of every service, whether its unit is active, enabled at boot, and healthy.
