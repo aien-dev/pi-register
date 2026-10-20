@@ -2,7 +2,7 @@
 
 A register of the services on a Linux server (Debian/Ubuntu with systemd), so one command tells you what the machine runs and why.
 
-Supports [Aienix](https://github.com/aien-dev/aienix), the core tree of AIEN. It is an operations tool for the project's Raspberry Pi house server, not part of the core.
+Supports [AienOS](https://github.com/aien-dev/aienix), the core tree of AIEN. It is an operations tool for the project's Raspberry Pi house server, not part of the core.
 
 **Status (2026-10-18): working, quiet.** The code and the register were last changed on 2026-10-04; since then only the license and this README changed (last on 2026-10-13). The register lists 32 services as of that date (count the `[[service]]` entries in `register.toml`).
 
