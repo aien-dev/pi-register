@@ -65,23 +65,83 @@ enum Cmd {
 /// Base-system units that are expected on any Debian/Ubuntu server and are
 /// not worth registering. Entries ending in '*' match by prefix.
 const IGNORE: &[&str] = &[
-    "systemd-*", "getty@*", "serial-getty@*", "dbus*", "ssh.service", "sshd.service",
-    "cron.service", "rsyslog.service", "networkd-dispatcher.service", "polkit.service",
-    "apparmor.service", "console-setup.service", "keyboard-setup.service", "e2scrub*",
-    "fstrim.*", "logrotate.*", "apt-*", "apt-daily*", "unattended-upgrades.service",
-    "ufw.service", "snapd*", "multipathd*", "irqbalance.service", "lvm2*", "blk-availability.service",
-    "cloud-*", "open-iscsi.service", "iscsid*", "rsync.service", "ModemManager.service",
-    "NetworkManager*", "wpa_supplicant.service", "user@*", "user-runtime-dir@*", "udev*",
-    "setvtrgb.service", "secureboot-db.service", "ubuntu-advantage.service", "ua-*",
-    "pollinate.service", "plymouth*", "grub-*", "gpu-manager.service", "hwclock.service",
-    "motd-news.*", "man-db.*", "dpkg-db-backup.*", "e2scrub_*", "finalrd.service",
-    "lxd-*", "lxcfs.service", "sysstat.service", "rpcbind.*", "nfs-*", "avahi-daemon.*",
-    "bluetooth.service", "cups*", "accounts-daemon.service", "udisks2.service",
-    "thermald.service", "upower.service", "power-profiles-daemon.service",
-    "switcheroo-control.service", "rtkit-daemon.service", "pi-register*",
-    "apport.service", "chrony.service", "dmesg.service", "netplan-*", "open-vm-tools.service",
-    "piboot-*", "rpi-eeprom-update.service", "sshd-keygen.service", "vgauth.service",
-    "containerd.service", "ubuntu-fan.service", "postfix.service",
+    "systemd-*",
+    "getty@*",
+    "serial-getty@*",
+    "dbus*",
+    "ssh.service",
+    "sshd.service",
+    "cron.service",
+    "rsyslog.service",
+    "networkd-dispatcher.service",
+    "polkit.service",
+    "apparmor.service",
+    "console-setup.service",
+    "keyboard-setup.service",
+    "e2scrub*",
+    "fstrim.*",
+    "logrotate.*",
+    "apt-*",
+    "apt-daily*",
+    "unattended-upgrades.service",
+    "ufw.service",
+    "snapd*",
+    "multipathd*",
+    "irqbalance.service",
+    "lvm2*",
+    "blk-availability.service",
+    "cloud-*",
+    "open-iscsi.service",
+    "iscsid*",
+    "rsync.service",
+    "ModemManager.service",
+    "NetworkManager*",
+    "wpa_supplicant.service",
+    "user@*",
+    "user-runtime-dir@*",
+    "udev*",
+    "setvtrgb.service",
+    "secureboot-db.service",
+    "ubuntu-advantage.service",
+    "ua-*",
+    "pollinate.service",
+    "plymouth*",
+    "grub-*",
+    "gpu-manager.service",
+    "hwclock.service",
+    "motd-news.*",
+    "man-db.*",
+    "dpkg-db-backup.*",
+    "e2scrub_*",
+    "finalrd.service",
+    "lxd-*",
+    "lxcfs.service",
+    "sysstat.service",
+    "rpcbind.*",
+    "nfs-*",
+    "avahi-daemon.*",
+    "bluetooth.service",
+    "cups*",
+    "accounts-daemon.service",
+    "udisks2.service",
+    "thermald.service",
+    "upower.service",
+    "power-profiles-daemon.service",
+    "switcheroo-control.service",
+    "rtkit-daemon.service",
+    "pi-register*",
+    "apport.service",
+    "chrony.service",
+    "dmesg.service",
+    "netplan-*",
+    "open-vm-tools.service",
+    "piboot-*",
+    "rpi-eeprom-update.service",
+    "sshd-keygen.service",
+    "vgauth.service",
+    "containerd.service",
+    "ubuntu-fan.service",
+    "postfix.service",
 ];
 
 fn pattern_matches(pat: &str, unit: &str) -> bool {
@@ -102,7 +162,9 @@ fn is_ignored(unit: &str) -> bool {
 
 /// "foo" becomes "foo.service"; names that already have a unit suffix stay.
 fn full_unit(unit: &str) -> String {
-    const SUFFIXES: &[&str] = &[".service", ".socket", ".timer", ".target", ".mount", ".path"];
+    const SUFFIXES: &[&str] = &[
+        ".service", ".socket", ".timer", ".target", ".mount", ".path",
+    ];
     if SUFFIXES.iter().any(|s| unit.ends_with(s)) {
         unit.to_string()
     } else {
@@ -136,7 +198,11 @@ fn load(flag: &Option<PathBuf>) -> Result<Register, String> {
     let mut seen = std::collections::HashSet::new();
     for s in &reg.services {
         if !seen.insert(&s.name) {
-            return Err(format!("{}: the name '{}' appears twice", path.display(), s.name));
+            return Err(format!(
+                "{}: the name '{}' appears twice",
+                path.display(),
+                s.name
+            ));
         }
     }
     Ok(reg)
@@ -162,8 +228,12 @@ fn unit_state(unit: &str) -> (String, String) {
     if !unit_exists(unit) {
         return ("missing".into(), "missing".into());
     }
-    let active = systemctl(&["is-active", unit]).map(|r| r.1).unwrap_or_else(|_| "unknown".into());
-    let enabled = systemctl(&["is-enabled", unit]).map(|r| r.1).unwrap_or_else(|_| "unknown".into());
+    let active = systemctl(&["is-active", unit])
+        .map(|r| r.1)
+        .unwrap_or_else(|_| "unknown".into());
+    let enabled = systemctl(&["is-enabled", unit])
+        .map(|r| r.1)
+        .unwrap_or_else(|_| "unknown".into());
     (active, enabled)
 }
 
@@ -180,16 +250,29 @@ fn health(s: &Service) -> &'static str {
 fn find<'a>(reg: &'a Register, name: &str) -> Result<&'a Service, String> {
     reg.services.iter().find(|s| s.name == name).ok_or_else(|| {
         let known: Vec<&str> = reg.services.iter().map(|s| s.name.as_str()).collect();
-        format!("'{name}' is not in the register. Known services: {}", known.join(", "))
+        format!(
+            "'{name}' is not in the register. Known services: {}",
+            known.join(", ")
+        )
     })
 }
 
 fn cmd_status(reg: &Register) -> Result<(), String> {
-    println!("{:<28} {:<10} {:<10} {:<10} {:<7} WANT-BOOT", "NAME", "CATEGORY", "ACTIVE", "BOOT", "HEALTH");
+    println!(
+        "{:<28} {:<10} {:<10} {:<10} {:<7} WANT-BOOT",
+        "NAME", "CATEGORY", "ACTIVE", "BOOT", "HEALTH"
+    );
     for s in &reg.services {
         let (a, e) = unit_state(&full_unit(&s.unit));
-        println!("{:<28} {:<10} {:<10} {:<10} {:<7} {}", s.name, s.category, a, e, health(s),
-            if s.boot { "yes" } else { "no" });
+        println!(
+            "{:<28} {:<10} {:<10} {:<10} {:<7} {}",
+            s.name,
+            s.category,
+            a,
+            e,
+            health(s),
+            if s.boot { "yes" } else { "no" }
+        );
     }
     Ok(())
 }
@@ -201,13 +284,25 @@ fn cmd_show(reg: &Register, name: &str) -> Result<(), String> {
     println!("Unit:       {}", s.unit);
     println!("Category:   {}", s.category);
     println!("Owner:      {}", s.owner);
-    if let Some(p) = s.port { println!("Port:       {p}"); }
-    if !s.depends_on.is_empty() { println!("Depends on: {}", s.depends_on.join(", ")); }
-    if !s.files.is_empty() { println!("Files:      {}", s.files.join(", ")); }
-    if let Some(x) = &s.secrets { println!("Secrets:    {x}"); }
-    if let Some(h) = &s.health { println!("Health cmd: {h}"); }
+    if let Some(p) = s.port {
+        println!("Port:       {p}");
+    }
+    if !s.depends_on.is_empty() {
+        println!("Depends on: {}", s.depends_on.join(", "));
+    }
+    if !s.files.is_empty() {
+        println!("Files:      {}", s.files.join(", "));
+    }
+    if let Some(x) = &s.secrets {
+        println!("Secrets:    {x}");
+    }
+    if let Some(h) = &s.health {
+        println!("Health cmd: {h}");
+    }
     println!("Boot:       {}", if s.boot { "yes" } else { "no" });
-    if let Some(n) = &s.notes { println!("Notes:      {n}"); }
+    if let Some(n) = &s.notes {
+        println!("Notes:      {n}");
+    }
     let (a, e) = unit_state(&full_unit(&s.unit));
     println!("Right now:  {a} (boot: {e}, health: {})", health(s));
     Ok(())
@@ -221,7 +316,9 @@ fn cmd_control(reg: &Register, verb: &str, name: &str) -> Result<(), String> {
         println!("{verb} {unit}: done");
         Ok(())
     } else {
-        Err(format!("systemctl {verb} {unit} failed (you may need sudo, or the unit may not exist)"))
+        Err(format!(
+            "systemctl {verb} {unit} failed (you may need sudo, or the unit may not exist)"
+        ))
     }
 }
 
@@ -229,11 +326,20 @@ fn cmd_check(reg: &Register) -> Result<(), String> {
     let mut problems = 0;
     for s in &reg.services {
         if !unit_exists(&full_unit(&s.unit)) {
-            println!("MISSING       {} (unit {} not found on this machine)", s.name, s.unit);
+            println!(
+                "MISSING       {} (unit {} not found on this machine)",
+                s.name, s.unit
+            );
             problems += 1;
         }
     }
-    let (ok, out) = systemctl(&["list-unit-files", "--type=service", "--state=enabled", "--no-legend", "--plain"])?;
+    let (ok, out) = systemctl(&[
+        "list-unit-files",
+        "--type=service",
+        "--state=enabled",
+        "--no-legend",
+        "--plain",
+    ])?;
     if !ok {
         return Err("could not list the enabled units on this machine".into());
     }
@@ -255,7 +361,10 @@ fn cmd_check(reg: &Register) -> Result<(), String> {
 
 fn cmd_doc(reg: &Register) -> Result<(), String> {
     println!("# Services on this machine\n");
-    println!("Generated from the register by pi-register. {} services.\n", reg.services.len());
+    println!(
+        "Generated from the register by pi-register. {} services.\n",
+        reg.services.len()
+    );
     let mut cats: Vec<&str> = reg.services.iter().map(|s| s.category.as_str()).collect();
     cats.sort();
     cats.dedup();
@@ -266,15 +375,32 @@ fn cmd_doc(reg: &Register) -> Result<(), String> {
             println!("{}\n", s.purpose);
             println!("- Unit: `{}`", s.unit);
             println!("- Owner: {}", s.owner);
-            if let Some(p) = s.port { println!("- Port: {p}"); }
-            if !s.depends_on.is_empty() { println!("- Depends on: {}", s.depends_on.join(", ")); }
-            if !s.files.is_empty() {
-                println!("- Files: {}", s.files.iter().map(|f| format!("`{f}`")).collect::<Vec<_>>().join(", "));
+            if let Some(p) = s.port {
+                println!("- Port: {p}");
             }
-            if let Some(x) = &s.secrets { println!("- Secrets live in: `{x}`"); }
-            if let Some(h) = &s.health { println!("- Health check: `{h}`"); }
+            if !s.depends_on.is_empty() {
+                println!("- Depends on: {}", s.depends_on.join(", "));
+            }
+            if !s.files.is_empty() {
+                println!(
+                    "- Files: {}",
+                    s.files
+                        .iter()
+                        .map(|f| format!("`{f}`"))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                );
+            }
+            if let Some(x) = &s.secrets {
+                println!("- Secrets live in: `{x}`");
+            }
+            if let Some(h) = &s.health {
+                println!("- Health check: `{h}`");
+            }
             println!("- Starts at boot: {}", if s.boot { "yes" } else { "no" });
-            if let Some(n) = &s.notes { println!("- Notes: {n}"); }
+            if let Some(n) = &s.notes {
+                println!("- Notes: {n}");
+            }
             println!();
         }
     }
@@ -371,7 +497,11 @@ boot = false
         assert!(is_ignored("ssh.service"));
         assert!(is_ignored("chrony.service"));
         assert!(is_ignored("piboot-try-reboot.service"));
-        assert!(is_ignored("containerd.service") && is_ignored("postfix.service") && is_ignored("ubuntu-fan.service"));
+        assert!(
+            is_ignored("containerd.service")
+                && is_ignored("postfix.service")
+                && is_ignored("ubuntu-fan.service")
+        );
         assert!(!is_ignored("headscale.service"));
         assert!(!is_ignored("fail2ban.service"));
     }
