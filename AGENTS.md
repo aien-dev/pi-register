@@ -1,12 +1,12 @@
 # pi-register (a register of the services on a Linux server)
 
-> `pi-register` is a small Rust command-line tool that reads `register.toml`, a hand-kept list of the services a Debian/Ubuntu systemd machine runs and why, and compares it with what systemd reports. The `register.toml` in this repository is the register of the project's Raspberry Pi house server and doubles as the example. It is an operations tool that supports AienOS, the whole AIEN system; it is not part of AienOS itself.
+> `pi-register` is a small Rust command-line tool that reads a hand-kept list of the services a Debian/Ubuntu systemd machine runs and why, and compares it with what systemd reports. The tracked `register.toml` is a generic example only. It is an operations tool that supports AienOS, the whole AIEN system; Aienux is the kernel. The tool is not part of AienOS itself.
 Shared rules: read https://www.aienos.com/agents/RULES.md first. This file adds what is specific to this repository; where the two differ, this file wins here.
 
 ## Scope
 
 - Applies to the whole repository: `src/main.rs` (the whole program, unit tests included), `register.toml`, `Cargo.toml`, `Cargo.lock`.
-- `register.toml` describes a real machine. Change it only to record a real change on that machine, never to test the tool or to add example data.
+- Keep `register.toml` generic. Real inventories belong in ignored `register.local.toml` or `/etc/pi-register/register.toml`, never tracked files.
 - `.crumb` is compiled crumb metadata. Do not edit it by hand. `.crumb.local` is local-only and ignored by git.
 - There is no CI workflow in this repository. Local build and test results are the only checks.
 
@@ -23,6 +23,7 @@ Needs a stable Rust toolchain. Dependencies are `clap`, `serde` and `toml`. The 
 ## Configuration
 
 - Register location: `--register <path>`, else `/etc/pi-register/register.toml`, else `./register.toml`.
+- The ignored `register.local.toml` requires an explicit `--register register.local.toml`; it is not an automatic fallback. Preserve an existing deployment's full register privately before updating, then migrate checkout-path callers or install it at the existing `/etc` default. See README for the migration procedure.
 - Each service is a `[[service]]` table. Required fields: `name`, `purpose`, `unit`, `category`, `owner`, `boot`. Optional: `port`, `depends_on`, `files`, `secrets`, `health`, `notes`.
 - A `unit` without a suffix means `<unit>.service`; write `.timer`, `.socket` and other suffixes in full.
 - `secrets` holds a path only, never a secret value.
@@ -60,11 +61,11 @@ Commands that touch the live machine. Run them only on the server the register d
 
 - Never run `status`, `show`, `check`, `start`, `stop`, `enable` or `disable` against the example register on a machine it does not describe: `status` and `show` execute the register's `health` commands, and the control commands change systemd state.
 - Ask before running `start`, `stop`, `enable` or `disable` on the real server, and before changing any `boot` value. Some entries are deliberately left stopped or disabled; their `notes` say why.
-- Never put secret values, tokens, keys or new private network addresses in `register.toml`, notes or commits.
+- Never put secret values, tokens, keys, private network addresses, internal hosts, personal home paths or deployment inventories in tracked files. Keep names and attribution intact.
 - Work on a branch and merge through a pull request with the `cargo test` result in its body.
 
 ## Further reading
 
 - `README.md`: field reference and command list.
-- `register.toml`: the live register and the worked example.
+- `register.toml`: a generic worked example, never the live inventory.
 - https://github.com/aien-dev/aienix: the AienOS system tree this tool supports.
