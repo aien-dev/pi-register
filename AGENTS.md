@@ -1,6 +1,6 @@
 # pi-register (a register of the services on a Linux server)
 
-> `pi-register` is a small Rust command-line tool that reads `register.toml`, a hand-kept list of the services a Debian/Ubuntu systemd machine runs and why, and compares it with what systemd reports. The `register.toml` in this repository is the register of the project's Raspberry Pi house server and doubles as the example. It is an operations tool that supports Aienix; it is not part of the core.
+> `pi-register` is a small Rust command-line tool that reads `register.toml`, a hand-kept list of the services a Debian/Ubuntu systemd machine runs and why, and compares it with what systemd reports. The `register.toml` in this repository is the register of the project's Raspberry Pi house server and doubles as the example. It is an operations tool that supports AienOS, the whole AIEN system; it is not part of AienOS itself.
 Shared rules: read https://www.aienos.com/agents/RULES.md first. This file adds what is specific to this repository; where the two differ, this file wins here.
 
 ## Scope
@@ -67,4 +67,4 @@ Commands that touch the live machine. Run them only on the server the register d
 
 - `README.md`: field reference and command list.
 - `register.toml`: the live register and the worked example.
-- https://github.com/aien-dev/aienix: the core tree this tool supports.
+- https://github.com/aien-dev/aienix: the AienOS system tree this tool supports.
