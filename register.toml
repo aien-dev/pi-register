@@ -357,7 +357,7 @@ files = ["/var/lib/tailscale/", "/etc/default/tailscaled"]
 secrets = "/var/lib/tailscale/tailscaled.state"
 health = "tailscale status --json | grep -q '\"BackendState\": *\"Running\"'"
 boot = true
-notes = "Node hub, 100.64.0.3, name hub.hub.internal. Joined 2026-10-04 with a one-time pre-auth key. Started with --accept-dns=false so the Pi keeps its own DNS (router upstream; Pi-hole and gandi-ddns untouched)."
+notes = "Node hub (Headscale address kept in local notes, not in this repo), name hub.hub.internal. Joined 2026-10-04 with a one-time pre-auth key. Started with --accept-dns=false so the Pi keeps its own DNS (router upstream; Pi-hole and gandi-ddns untouched)."
 
 [[service]]
 name = "aien-shell"
@@ -371,4 +371,4 @@ files = ["/usr/local/bin/aien-shell", "/etc/aien-shell/fullchain.pem"]
 secrets = "/etc/aien-shell/key.pem"
 health = "curl -fs https://aien.aienos.com:8443/api/status | grep -q '{'"
 boot = true
-notes = "Added 2026-10-04. Binds 100.64.0.3:8443 only (Headscale net, not the internet). Cert for aien.aienos.com from acme.sh, auto-renews, reloadcmd restarts the service. Headscale dns extra_record aien.aienos.com -> 100.64.0.3. Source: ~/workspace/phone-agent/aien-shell on the Spark (not yet a public repo). Health expects HTTP 200 with a JSON body from /api/status."
+notes = "Added 2026-10-04. Binds the hub Headscale address, port 8443 only (Headscale net, not the internet). Cert for aien.aienos.com from acme.sh, auto-renews, reloadcmd restarts the service. Headscale dns extra_record aien.aienos.com -> the hub Headscale address. Source: ~/workspace/phone-agent/aien-shell on the Spark (not yet a public repo). Health expects HTTP 200 with a JSON body from /api/status."
