@@ -49,5 +49,6 @@ Only the default branch `main`; there is no release (Cargo version `0.1.0`). Rep
 ## Status
 
 An operations tool that supports AienOS; it is not part of AienOS itself (AGENTS.md). There is no
-CI workflow in this repository; local build and test results are the only checks. No
+repository-defined build/test workflow; the build and test results documented here are local.
+GitHub-managed CodeQL analysis can appear on pull requests but does not run these tests. No
 certification, no bug bounty. See AUDIT_SCOPE.md for what to review and how to build and test it.

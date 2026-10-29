@@ -36,8 +36,8 @@ tool, not part of AienOS. Licence AGPL-3.0-or-later.
    the ignore patterns.
 6. `restore_sigpipe` uses an `extern` declaration of `signal`; check it for soundness.
 
-There is no `.github/workflows/` directory. AGENTS.md: "There is no CI workflow in this repository.
-Local build and test results are the only checks."
+There is no `.github/workflows/` directory or repository-defined build/test job.
+GitHub-managed CodeQL analysis appears on pull requests; it does not execute the local tests below.
 
 ## Trust boundaries
 
@@ -93,7 +93,7 @@ and `show` execute `health` commands and the control commands change systemd sta
 
 ## Known limitations and NOT_RUN
 
-- No CI; local results only.
+- No repository-defined build/test CI; the executable results here are local.
 - `health` commands have no timeout in the code.
 - No tests cover `health` execution or the systemctl wrappers (they need a live systemd).
 - Rust toolchain version is not pinned.
