@@ -12,7 +12,7 @@ A small Rust command-line tool that reads a hand-kept list of the services a Deb
 systemd machine runs and why (`register.toml`), and compares it with what systemd reports. The
 whole program and its unit tests are in `src/main.rs` (391 lines). The tracked `register.toml` is a
 generic example with one `ssh` entry, not an inventory of a deployed machine. It is an operations
-tool, not part of AienOS. Licence AGPL-3.0-or-later.
+tool, not part of Sovereign Intelligence (SI). Licence AGPL-3.0-or-later.
 
 ## What to review, in priority order
 
