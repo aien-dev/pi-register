@@ -2,7 +2,7 @@
 
 A register of the services on a Linux server (Debian/Ubuntu with systemd), so one command tells you what the machine runs and why.
 
-Supports [AienOS](https://github.com/aien-dev/aienix), the whole AIEN system. Aienux is its kernel. This is an operations tool, not part of the system itself.
+Supports [Sovereign Intelligence (SI)](https://github.com/aien-dev/sovereign-intelligence), the whole system. AienOS is the operating-system layer; Aienux is the AienOS kernel. This is an operations tool, not part of the system itself.
 
 The checked-in `register.toml` is a generic Debian/Ubuntu example, not an inventory of a deployed machine.
 

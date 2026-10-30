@@ -1,6 +1,6 @@
 # pi-register (a register of the services on a Linux server)
 
-> `pi-register` is a small Rust command-line tool that reads a hand-kept list of the services a Debian/Ubuntu systemd machine runs and why, and compares it with what systemd reports. The tracked `register.toml` is a generic example only. It is an operations tool that supports AienOS, the whole AIEN system; Aienux is the kernel. The tool is not part of AienOS itself.
+> `pi-register` is a small Rust command-line tool that reads a hand-kept list of the services a Debian/Ubuntu systemd machine runs and why, and compares it with what systemd reports. The tracked `register.toml` is a generic example only. It is an operations tool that supports Sovereign Intelligence (SI), the whole system; AienOS is the operating-system layer and Aienux is the AienOS kernel. The tool is not part of Sovereign Intelligence itself.
 Shared rules: read https://www.aienos.com/agents/RULES.md first. This file adds what is specific to this repository; where the two differ, this file wins here.
 
 ## Scope
@@ -68,4 +68,4 @@ Commands that touch the live machine. Run them only on the server the register d
 
 - `README.md`: field reference and command list.
 - `register.toml`: a generic worked example, never the live inventory.
-- https://github.com/aien-dev/aienix: the AienOS system tree this tool supports.
+- https://github.com/aien-dev/sovereign-intelligence: the integration, release and install center of Sovereign Intelligence (SI), where the signed Spark test runs.
